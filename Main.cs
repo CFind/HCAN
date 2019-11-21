@@ -9,6 +9,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Peak.Can.Basic;
 
+class Element
+{
+    public Element(string str, uint value) 
+    {
+        Str = str;
+        Value = value;
+    }
+    public string Str { get; }
+    public uint Value { get; }
+}
+
 namespace HCAN
 {
     public partial class Main : Form
@@ -16,13 +27,15 @@ namespace HCAN
         public Main()
         {
             InitializeComponent();
-            int[] baudrates = { 100, 125, 250, 500, 800, 1000 };
-            foreach (int baudrate in baudrates)
-            {
-                 
-            }
+
+            var v = new { Str = "250 Kb/s", Value = 250 };
+            
+            this.comboBox1.Items.Add(v);
+            this.comboBox1.DisplayMember = "Str";
         }
-
-
     }
 }
+
+
+    
+
