@@ -33,7 +33,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.baudrateComboBox = new System.Windows.Forms.ComboBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -43,6 +43,7 @@
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label1 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.baudrateLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -76,13 +77,14 @@
             // 
             this.timer1.Interval = 20;
             // 
-            // comboBox1
+            // baudrateComboBox
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(355, 382);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 9;
+            this.baudrateComboBox.FormattingEnabled = true;
+            this.baudrateComboBox.Location = new System.Drawing.Point(12, 356);
+            this.baudrateComboBox.Name = "baudrateComboBox";
+            this.baudrateComboBox.Size = new System.Drawing.Size(121, 21);
+            this.baudrateComboBox.TabIndex = 9;
+            this.baudrateComboBox.SelectedIndexChanged += new System.EventHandler(this.baudrateComboBox_SelectedIndexChanged);
             // 
             // dataGridView1
             // 
@@ -103,7 +105,7 @@
             this.dataGridViewTextBoxColumn12});
             this.dataGridView1.Location = new System.Drawing.Point(48, 3);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(805, 127);
+            this.dataGridView1.Size = new System.Drawing.Size(805, 112);
             this.dataGridView1.TabIndex = 8;
             // 
             // dataGridViewTextBoxColumn7
@@ -150,7 +152,7 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(39, 133);
+            this.label1.Size = new System.Drawing.Size(39, 118);
             this.label1.TabIndex = 6;
             this.label1.Text = "RX";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -170,17 +172,27 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45.11784F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 54.88216F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(856, 297);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(856, 262);
             this.tableLayoutPanel1.TabIndex = 7;
+            // 
+            // baudrateLabel
+            // 
+            this.baudrateLabel.AutoSize = true;
+            this.baudrateLabel.Location = new System.Drawing.Point(12, 340);
+            this.baudrateLabel.Name = "baudrateLabel";
+            this.baudrateLabel.Size = new System.Drawing.Size(50, 13);
+            this.baudrateLabel.TabIndex = 10;
+            this.baudrateLabel.Text = "Baudrate";
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(856, 415);
+            this.Controls.Add(this.baudrateLabel);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.baudrateComboBox);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Main";
             this.Text = "Form1";
@@ -198,7 +210,7 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox baudrateComboBox;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
@@ -208,6 +220,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label baudrateLabel;
     }
 }
 
