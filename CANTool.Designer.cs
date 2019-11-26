@@ -1,6 +1,6 @@
 ﻿namespace HCAN
 {
-    partial class Main
+    partial class CANTool
     {
         /// <summary>
         /// Required designer variable.
