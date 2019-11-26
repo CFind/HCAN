@@ -19,9 +19,9 @@ namespace HCAN
         public CANTool()
         {
             InitializeComponent();
-            baudratesComboBox.Items.AddRange(new object[] { new { str = "250Kb/s", TPCANBaudrate.PCAN_BAUD_250K }, new { str = "500Kb/s", TPCANBaudrate.PCAN_BAUD_500K } });
-            baudratesComboBox.DisplayMember = "str";
-            baudratesComboBox.SelectedIndex = 0;
+            baudrateComboBox.Items.AddRange(new object[] { new { str = "250Kb/s", TPCANBaudrate.PCAN_BAUD_250K }, new { str = "500Kb/s", TPCANBaudrate.PCAN_BAUD_500K } });
+            baudrateComboBox.DisplayMember = "str";
+            baudrateComboBox.SelectedIndex = 0;
         }
 
         private void baudrateComboBox_SelectedIndexChanged(object sender, EventArgs e)
