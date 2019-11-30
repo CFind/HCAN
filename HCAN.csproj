@@ -46,17 +46,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CANTool.cs">
+    <Compile Include="CANController.cs" />
+    <Compile Include="CANToolForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CANTool.Designer.cs">
-      <DependentUpon>CANTool.cs</DependentUpon>
+    <Compile Include="CANToolForm.Designer.cs">
+      <DependentUpon>CANToolForm.cs</DependentUpon>
     </Compile>
     <Compile Include="PCANBasic.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="CANTool.resx">
-      <DependentUpon>CANTool.cs</DependentUpon>
+    <EmbeddedResource Include="CANToolForm.resx">
+      <DependentUpon>CANToolForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
