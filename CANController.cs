@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 using Peak.Can.Basic;
 
 namespace HCAN
@@ -10,34 +11,51 @@ namespace HCAN
     class CANController
     {
 
+
+        #region Members
         private TPCANBaudrate PCANBaudrate = TPCANBaudrate.PCAN_BAUD_250K;
         private readonly ushort PCANHandle = PCANBasic.PCAN_USBBUS1;
-        private StringBuilder errString = new StringBuilder();
         private bool netInitialized = false;
         private CANToolForm Main;
-
         private System.Threading.AutoResetEvent ReceiveEvent;
         private System.Threading.Thread RxThread;
+        private ArrayList MessagesList;
+        #endregion
 
+        #region Public members
+        public class OnPCANErrorData : EventArgs { public string ErrorString { get; set; } }
         public EventHandler NetStatusChange;
+        public EventHandler<OnPCANErrorData> PCANError;
+        #endregion
+
 
 
         public CANController(CANToolForm mainForm)
         {
             Main = mainForm;
             ReceiveEvent = new System.Threading.AutoResetEvent(false);
-            StartReadThread();
         }
 
 
 
+        #region Events
+        protected virtual void OnPCANError(OnPCANErrorData e)
+        {
+            EventHandler<OnPCANErrorData> handler = PCANError;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
         protected virtual void OnNetStatusChange(EventArgs e)
         {
             EventHandler handler = NetStatusChange;
             handler?.Invoke(this, e);
         }
+        #endregion
 
-        public bool GetNetStatus()
+
+        public bool GetNetInitialized()
         {
             return netInitialized;
         }
@@ -62,7 +80,7 @@ namespace HCAN
                 result = PCANBasic.Uninitialize(PCANHandle);
                 if (result != TPCANStatus.PCAN_ERROR_OK)
                 {
-                    ErrorHandle(result);
+                    ThrowInitError(result);
                     return;
                 }
 
@@ -70,12 +88,24 @@ namespace HCAN
             result = PCANBasic.Initialize(PCANHandle, PCANBaudrate);
             if (result != TPCANStatus.PCAN_ERROR_OK)
             {
-                ErrorHandle(result);
+                ThrowInitError(result);
                 return;
             }
             netInitialized = true;
-            
+            StartReadThread();
             OnNetStatusChange(EventArgs.Empty);
+        }
+
+        public void UninitializeNet()
+        {
+            TPCANStatus result;
+            result = PCANBasic.Uninitialize(PCANHandle);
+            if (result != TPCANStatus.PCAN_ERROR_OK && result != TPCANStatus.PCAN_ERROR_INITIALIZE)
+            {
+                ThrowInitError(result);
+                return;
+            }
+            netInitialized = false;
         }
 
         private void StartReadThread()
@@ -86,20 +116,38 @@ namespace HCAN
             RxThread.Start();
         }
 
-        private void ErrorHandle(TPCANStatus result)
+        private void ThrowInitError(TPCANStatus result)
+        {
+            string errMsg = BuildErrorString(result);
+            ThrowErrorMessage(errMsg);
+        }
+
+        private string BuildErrorString(TPCANStatus result)
         {
             string errMsg;
-            StringBuilder errString = new StringBuilder();
-            if (PCANBasic.GetErrorText(result, 0, errString) != TPCANStatus.PCAN_ERROR_OK)
+            StringBuilder errString = new StringBuilder(256);
+            TPCANStatus errCheckResult = PCANBasic.GetErrorText(result, 0, errString);
+            if (errCheckResult != TPCANStatus.PCAN_ERROR_OK)
             {
-
                 errMsg = "Error checking errors. Probably not good.";
             }
             else
             {
                 errMsg = errString.ToString();
             }
-            Main.Error(errMsg);
+            return errMsg;
+        }
+
+        private void ThrowErrorMessage(string errorMsg)
+        {
+            OnPCANErrorData errorData = new OnPCANErrorData();
+            errorData.ErrorString = errorMsg;
+            OnPCANError(errorData);
+        }
+
+        private void ErrorReadHandle(TPCANStatus result)
+        {
+
         }
 
         private void RxThreadFunction()
@@ -109,21 +157,40 @@ namespace HCAN
 
             buffer = Convert.ToUInt32(ReceiveEvent.SafeWaitHandle.DangerousGetHandle().ToInt32());
             result = PCANBasic.SetValue(PCANHandle, TPCANParameter.PCAN_RECEIVE_EVENT, ref buffer, sizeof(UInt32));
-
             if (result != TPCANStatus.PCAN_ERROR_OK)
             {
-                ErrorHandle(result);
+                lock (this)
+                {
+                    ThrowInitError(result);
+                    return;
+                }
             }
 
             while (true)
             {
-                if (ReceiveEvent.WaitOne(50));
+                if (ReceiveEvent.WaitOne(50))
+                    RxEventRead();
             }
         }
 
-        static private void RxEventRead()
+        private void RxEventRead()
         {
+            TPCANMsg msg;
+            TPCANTimestamp timestamp;
+            TPCANStatus result;
 
+            result = PCANBasic.Read(PCANHandle, out msg, out timestamp);
+
+            if (result != TPCANStatus.PCAN_ERROR_OK)
+                ErrorReadHandle(result);
+
+
+            
+
+        }
+
+        private void ProcessMessage(TPCANMsg msg, TPCANTimestamp timestamp)
+        {
 
         }
 

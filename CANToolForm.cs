@@ -24,13 +24,19 @@ namespace HCAN
             baudrateComboBox.Items.AddRange(new object[]  {"250 Kb/s","500 Kb/s"});
             baudrateComboBox.SelectedIndex = 0;
             Controller.NetStatusChange += netStatusChanged;
+            Controller.PCANError += errorPCAN;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Application.Exit();
 
         private void netStatusChanged(object sender, EventArgs e)
         {
-            netInitButton.Text = Controller.GetNetStatus() ? "Re-Initialize" : "Initialize";
+            netInitButton.Text = Controller.GetNetInitialized() ? Strings.UninitializeString : Strings.InitializeString;
+        }
+
+        private void errorPCAN(object sender, CANController.OnPCANErrorData e)
+        {
+            ShowError(e.ErrorString);
         }
 
         private void baudrateComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -51,15 +57,22 @@ namespace HCAN
 
         private void netInitButton_Click(object sender, EventArgs e)
         {
-            Controller.InitializeNet();
+            if (Controller.GetNetInitialized())
+                Controller.UninitializeNet();
+            else
+                Controller.InitializeNet();
         }
 
-        public void Error(string message)
+        public void ShowError(string message)
         {
             System.Media.SystemSounds.Exclamation.Play();
-            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(message, Strings.ErrorString, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        private void CANToolForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Controller.UninitializeNet();
+        }
     }
             
 }
