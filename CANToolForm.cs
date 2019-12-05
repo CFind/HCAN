@@ -29,9 +29,17 @@ namespace HCAN
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Application.Exit();
 
-        private void netStatusChanged(object sender, EventArgs e)
+        private void netStatusChanged(object sender, CANController.OnNetStatusChangeData e)
         {
             netInitButton.Text = Controller.GetNetInitialized() ? Strings.UninitializeString : Strings.InitializeString;
+            switch (e.status)
+            {
+                case CANController.OnNetStatusChangeData.Statuses.OK:
+                    break;
+                default:
+                    break;
+            }
+
         }
 
         private void errorPCAN(object sender, CANController.OnPCANErrorData e)

@@ -24,7 +24,19 @@ namespace HCAN
 
         #region Public members
         public class OnPCANErrorData : EventArgs { public string ErrorString { get; set; } }
-        public EventHandler NetStatusChange;
+        public class OnNetStatusChangeData : EventArgs 
+        { 
+            public bool Initialized { get; set; } 
+            public enum Statuses : byte
+            {
+                OK,
+                OFF,
+                BUSHEAVY,
+                BUSLIGHT
+            }
+            public Statuses status { get; set; }
+        }
+        public EventHandler<OnNetStatusChangeData> NetStatusChange;
         public EventHandler<OnPCANErrorData> PCANError;
         #endregion
 
@@ -47,9 +59,9 @@ namespace HCAN
                 handler(this, e);
             }
         }
-        protected virtual void OnNetStatusChange(EventArgs e)
+        protected virtual void OnNetStatusChange(OnNetStatusChangeData e)
         {
-            EventHandler handler = NetStatusChange;
+            EventHandler<OnNetStatusChangeData> handler = NetStatusChange;
             handler?.Invoke(this, e);
         }
         #endregion
