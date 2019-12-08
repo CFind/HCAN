@@ -22,11 +22,25 @@ namespace HCAN
         private ArrayList MessagesList;
         #endregion
 
-        #region Public members
-        public class OnPCANErrorData : EventArgs { public string ErrorString { get; set; } }
-        public class OnNetStatusChangeData : EventArgs 
-        { 
-            public bool Initialized { get; set; } 
+        public CANController(CANToolForm mainForm)
+        {
+            Main = mainForm;
+            ReceiveEvent = new System.Threading.AutoResetEvent(false);
+        }
+
+
+
+        #region Events
+        #region Event Members
+        public class OnPCANErrorData : EventArgs { public OnPCANErrorData(string err) { this.ErrorString = err; } public string ErrorString { get; set; } }
+        public class OnNetStatusChangeData : EventArgs
+        {
+            public OnNetStatusChangeData(bool init, Statuses status)
+            {
+                this.Initialized = init;
+                this.status = status;
+            }
+            public bool Initialized { get; set; }
             public enum Statuses : byte
             {
                 OK,
@@ -40,17 +54,6 @@ namespace HCAN
         public EventHandler<OnPCANErrorData> PCANError;
         #endregion
 
-
-
-        public CANController(CANToolForm mainForm)
-        {
-            Main = mainForm;
-            ReceiveEvent = new System.Threading.AutoResetEvent(false);
-        }
-
-
-
-        #region Events
         protected virtual void OnPCANError(OnPCANErrorData e)
         {
             EventHandler<OnPCANErrorData> handler = PCANError;
@@ -65,7 +68,7 @@ namespace HCAN
             handler?.Invoke(this, e);
         }
         #endregion
-
+        #region Public Methods
 
         public bool GetNetInitialized()
         {
@@ -105,7 +108,7 @@ namespace HCAN
             }
             netInitialized = true;
             StartReadThread();
-            OnNetStatusChange(EventArgs.Empty);
+            OnNetStatusChange(new OnNetStatusChangeData(netInitialized, OnNetStatusChangeData.Statuses.OK));
         }
 
         public void UninitializeNet()
@@ -118,8 +121,10 @@ namespace HCAN
                 return;
             }
             netInitialized = false;
+            OnNetStatusChange(new OnNetStatusChangeData(netInitialized, OnNetStatusChangeData.Statuses.OFF));
         }
-
+        #endregion
+        #region Private Methods
         private void StartReadThread()
         {
             System.Threading.ThreadStart threadDelegate = new System.Threading.ThreadStart(RxThreadFunction);
@@ -152,9 +157,7 @@ namespace HCAN
 
         private void ThrowErrorMessage(string errorMsg)
         {
-            OnPCANErrorData errorData = new OnPCANErrorData();
-            errorData.ErrorString = errorMsg;
-            OnPCANError(errorData);
+            OnPCANError(new OnPCANErrorData(errorMsg));
         }
 
         private void ErrorReadHandle(TPCANStatus result)
@@ -194,17 +197,18 @@ namespace HCAN
             result = PCANBasic.Read(PCANHandle, out msg, out timestamp);
 
             if (result != TPCANStatus.PCAN_ERROR_OK)
+            {
                 ErrorReadHandle(result);
-
-
-            
-
+                return;
+            }
+            ProcessMessage(msg, timestamp);
         }
 
         private void ProcessMessage(TPCANMsg msg, TPCANTimestamp timestamp)
         {
 
         }
+        #endregion
 
     }
 }
