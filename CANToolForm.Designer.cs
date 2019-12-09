@@ -106,6 +106,7 @@
             // 
             this.rxTimer.Enabled = true;
             this.rxTimer.Interval = 20;
+            this.rxTimer.Tick += new System.EventHandler(this.rxTimer_Tick);
             // 
             // statusStrip1
             // 

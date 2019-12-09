@@ -8,8 +8,52 @@ using Peak.Can.Basic;
 
 namespace HCAN
 {
+
+
     class CANController
     {
+
+        private class CanMsg
+        {
+
+
+            private TPCANMsg msg;
+            private TPCANTimestamp timestamp;
+            private TPCANTimestamp lastTimestamp;
+            private int index;
+            private int recieveCount;
+
+            public CanMsg(TPCANMsg msg, TPCANTimestamp timestamp, int index)
+            {
+                this.msg = msg;
+                this.timestamp = timestamp;
+                this.index = index;
+                this.recieveCount = 0;
+            }
+
+            public void Update(TPCANMsg msg, TPCANTimestamp timestamp)
+            {
+                this.msg = msg;
+                this.timestamp = timestamp;
+                recieveCount++;
+            }
+
+            public TPCANMsg Msg { get => msg; }
+            public TPCANTimestamp Timestamp { get => timestamp; }
+            public int Index { get => index; }
+            public int RecieveCount { get => recieveCount; }
+
+            private string GetTimeString()
+            {
+                double time;
+                time = timestamp.millis;
+                return time.ToString()
+
+
+            }
+
+
+        }
 
 
         #region Members
@@ -206,7 +250,7 @@ namespace HCAN
 
         private void ProcessMessage(TPCANMsg msg, TPCANTimestamp timestamp)
         {
-
+            
         }
         #endregion
 
