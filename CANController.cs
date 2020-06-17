@@ -105,7 +105,10 @@ namespace HCAN
             }
             netInitialized = true;
             StartReadThread();
-            OnNetStatusChange(EventArgs.Empty);
+            OnNetStatusChangeData data = new OnNetStatusChangeData();
+            data.Initialized = true;
+            data.status = OnNetStatusChangeData.Statuses.OK;
+            OnNetStatusChange(data);
         }
 
         public void UninitializeNet()
