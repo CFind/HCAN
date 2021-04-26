@@ -81,6 +81,11 @@ namespace HCAN
         {
             Controller.UninitializeNet();
         }
+
+        private void rxTimer_Tick(object sender, EventArgs e)
+        {
+
+        }
     }
             
 }

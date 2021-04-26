@@ -8,8 +8,52 @@ using Peak.Can.Basic;
 
 namespace HCAN
 {
+
+
     class CANController
     {
+
+        private class CanMsg
+        {
+
+
+            private TPCANMsg msg;
+            private TPCANTimestamp timestamp;
+            private TPCANTimestamp lastTimestamp;
+            private int index;
+            private int recieveCount;
+
+            public CanMsg(TPCANMsg msg, TPCANTimestamp timestamp, int index)
+            {
+                this.msg = msg;
+                this.timestamp = timestamp;
+                this.index = index;
+                this.recieveCount = 0;
+            }
+
+            public void Update(TPCANMsg msg, TPCANTimestamp timestamp)
+            {
+                this.msg = msg;
+                this.timestamp = timestamp;
+                recieveCount++;
+            }
+
+            public TPCANMsg Msg { get => msg; }
+            public TPCANTimestamp Timestamp { get => timestamp; }
+            public int Index { get => index; }
+            public int RecieveCount { get => recieveCount; }
+
+            private string GetTimeString()
+            {
+                double time;
+                time = timestamp.millis;
+                return time.ToString()
+
+
+            }
+
+
+        }
 
 
         #region Members
@@ -22,11 +66,25 @@ namespace HCAN
         private ArrayList MessagesList;
         #endregion
 
-        #region Public members
-        public class OnPCANErrorData : EventArgs { public string ErrorString { get; set; } }
-        public class OnNetStatusChangeData : EventArgs 
-        { 
-            public bool Initialized { get; set; } 
+        public CANController(CANToolForm mainForm)
+        {
+            Main = mainForm;
+            ReceiveEvent = new System.Threading.AutoResetEvent(false);
+        }
+
+
+
+        #region Events
+        #region Event Members
+        public class OnPCANErrorData : EventArgs { public OnPCANErrorData(string err) { this.ErrorString = err; } public string ErrorString { get; set; } }
+        public class OnNetStatusChangeData : EventArgs
+        {
+            public OnNetStatusChangeData(bool init, Statuses status)
+            {
+                this.Initialized = init;
+                this.status = status;
+            }
+            public bool Initialized { get; set; }
             public enum Statuses : byte
             {
                 OK,
@@ -40,17 +98,6 @@ namespace HCAN
         public EventHandler<OnPCANErrorData> PCANError;
         #endregion
 
-
-
-        public CANController(CANToolForm mainForm)
-        {
-            Main = mainForm;
-            ReceiveEvent = new System.Threading.AutoResetEvent(false);
-        }
-
-
-
-        #region Events
         protected virtual void OnPCANError(OnPCANErrorData e)
         {
             EventHandler<OnPCANErrorData> handler = PCANError;
@@ -65,7 +112,7 @@ namespace HCAN
             handler?.Invoke(this, e);
         }
         #endregion
-
+        #region Public Methods
 
         public bool GetNetInitialized()
         {
@@ -121,8 +168,10 @@ namespace HCAN
                 return;
             }
             netInitialized = false;
+            OnNetStatusChange(new OnNetStatusChangeData(netInitialized, OnNetStatusChangeData.Statuses.OFF));
         }
-
+        #endregion
+        #region Private Methods
         private void StartReadThread()
         {
             System.Threading.ThreadStart threadDelegate = new System.Threading.ThreadStart(RxThreadFunction);
@@ -155,9 +204,7 @@ namespace HCAN
 
         private void ThrowErrorMessage(string errorMsg)
         {
-            OnPCANErrorData errorData = new OnPCANErrorData();
-            errorData.ErrorString = errorMsg;
-            OnPCANError(errorData);
+            OnPCANError(new OnPCANErrorData(errorMsg));
         }
 
         private void ErrorReadHandle(TPCANStatus result)
@@ -197,17 +244,18 @@ namespace HCAN
             result = PCANBasic.Read(PCANHandle, out msg, out timestamp);
 
             if (result != TPCANStatus.PCAN_ERROR_OK)
+            {
                 ErrorReadHandle(result);
-
-
-            
-
+                return;
+            }
+            ProcessMessage(msg, timestamp);
         }
 
         private void ProcessMessage(TPCANMsg msg, TPCANTimestamp timestamp)
         {
-
+            
         }
+        #endregion
 
     }
 }
